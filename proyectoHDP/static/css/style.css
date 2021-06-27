@@ -1,0 +1,31 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+.content-wrapper{
+    display: flex;
+    flex-direction: row;
+    padding:2em;
+    justify-content: space-around;
+}
+
+.side-wrapper{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    text-align: center;
+}
+
+.card{
+    margin-bottom:2em;
+}
+
+.form-divider{
+    padding: 2em;
+    border: 1px solid black;
+    margin-top: 1em;
+    border-radius: 1.5em;
+}

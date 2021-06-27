@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vacunación COVID 19</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <style> 
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body{
+    background-color: #c5cddc82;
+}
+
+
+.content-wrapper{
+    display: flex;
+    flex-direction: row;
+    padding:2em;
+    justify-content: space-around;
+    border: 1px solid #ececec;
+    border-radius: 2em;
+    margin: 2em;
+    box-shadow: 1px 1px 10px #1b1b1b;
+    background:#FFFFFF
+}
+
+.side-wrapper{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    text-align: center;
+}
+
+.card{
+    margin-bottom:2em;
+    box-shadow: 1px 1px 10px #1b1b1b69;
+}
+
+.form-divider{
+    padding: 2em;
+    border: 1px solid black;
+    margin-top: 1em;
+    border-radius: 1.5em;
+}</style>
+</head>
+
+<body>
+    <!-- As a link -->
+    <nav class="navbar navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{%url 'inicio' %}">Vacunación COVID 19</a>
+        </div>
+    </nav>
+
+    <h1 style="text-align: center; margin-top:1em;">Vacunación COVID 19</h1>
+    <div class="content-wrapper">
+        <div class="side-wrapper">
+            <div class="card" style="width: 24em;">
+                <div class="card-body">
+                    <h5 class="card-title">¡Tu Momento ha llegado!</h5>
+                    <p class="card-text">Para verificar si ya llegó tu momento para vacunarte haz clic en el siguiente
+                        botón.</p>
+                        botón.</p>
+                        <a class="btn btn-primary" href="{%url 'realizarConsulta' %}">Consultar</a>
+                </div>
+            </div>
+
+            <div class="card" style="width: 24em;">
+                <div class="card-body">
+                    <h5 class="card-title">Registrar Dosis</h5>
+                    <p class="card-text">Para registrar las dosis aplicadas a los ciudadanos haz clic en el siguiente
+                        botón.</p>
+                   <a class="btn btn-primary" href="{%url 'registrarAplicacion' %}">Registrar</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="chart-wrapper">
+            <div id="columnchart_values"></div>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
+        integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"
+        integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF"
+        crossorigin="anonymous"></script>
+
+    <script type="text/javascript">
+        var dosis;
+        var ciudadanos;
+          var xhr = new XMLHttpRequest();
+          xhr.open("GET", "/getGrafica", true);
+          xhr.onload = function () {
+            if (this.status === 200) {
+                response = JSON.parse(xhr.responseText);
+                console.log(response);
+                dosis = response.dosis;
+                ciudadanos = response.ciudadanos;
+            } else {
+              console.log(this.status);
+            }
+          };
+          xhr.send();
+
+        google.charts.load("current", { packages: ['corechart'] });
+        google.charts.setOnLoadCallback(drawChart);
+        function drawChart() {
+            var data = google.visualization.arrayToDataTable([
+                ["Element", "Density", { role: "style" }],
+                ["Personas vacunadas",ciudadanos, "#1659DF"],
+                ["Dosis aplicadas", dosis, "#42ABCA"],
+            ]);
+
+            var view = new google.visualization.DataView(data);
+            view.setColumns([0, 1,
+                {
+                    calc: "stringify",
+                    sourceColumn: 1,
+                    type: "string",
+                    role: "annotation"
+                },
+                2]);
+
+            var options = {
+                title: "Avance de la vacunación en El Salvador",
+                width: 500,
+                height: 500,
+                bar: { groupWidth: "90%" },
+                legend: { position: "none" },
+            };
+            var chart = new google.visualization.ColumnChart(document.getElementById("columnchart_values"));
+            chart.draw(view, options);
+        }
+    </script>
+</body>
+
+</html>

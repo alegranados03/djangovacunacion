@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vacunación COVID 19</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+      crossorigin="anonymous"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        height: 90vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .content-wrapper {
+        display: flex;
+        flex-direction: row;
+        padding: 2em;
+        justify-content: space-around;
+      }
+
+      .side-wrapper {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly;
+        text-align: center;
+      }
+
+      .card {
+        margin-bottom: 2em;
+      }
+
+      .form-divider {
+        padding: 2em;
+        border: 1px solid black;
+        margin-top: 1em;
+        border-radius: 1.5em;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- As a link -->
+    <nav class="navbar navbar-dark bg-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="{%url 'inicio' %}">Vacunación COVID 19</a>
+      </div>
+    </nav>
+
+    <div
+      class="container"
+      style="
+        width: 48em;
+        background: #e0dbff !important;
+        box-shadow: 1px 1px 10px #1b1b1b69;
+        padding: 2em;
+        margin: auto;
+        border: 1px solid #ececec;
+        border-radius: 1em;
+      "
+    >
+      <h1 style="text-align: center">Vacunación COVID 19</h1>
+      <h3 style="text-align: center; margin-top: 1em">
+        ¡Veamos si ya llegó tu momento para vacunarte!
+      </h3>
+      <h5 style="text-align: center; margin-top: 1em; color: #808080">
+        Ingresa tu número de DUI y fecha de nacimiento
+      </h5>
+
+      <form
+        id="consulta"
+        style="margin-top: 2em"
+        method="POST"
+        onsubmit="onSubmitHandler(event);"
+      >
+        {%csrf_token%}
+        <div class="mb-3">
+          <label for="duvei" class="form-label"
+            ><strong>Número de DUI</strong></label
+          >
+          <input
+            type="text"
+            class="form-control"
+            id="dui"
+            name="dui"
+            aria-describedby="numerodui"
+          />
+        </div>
+        <div class="mb-3">
+          <label for="fecha_nacimiento" class="form-label"
+            ><strong>Fecha de Nacimiento</strong></label
+          >
+          <input
+            type="date"
+            class="form-control"
+            id="fecha_nacimiento"
+            name="fecha_nacimiento"
+          />
+        </div>
+
+        <div style="display: flex; justify-content: space-evenly">
+          <a href="{%url 'inicio' %}" class="btn btn-danger">Cancelar</a>
+          <button type="submit" class="btn btn-primary">Cosultar</button>
+        </div>
+      </form>
+    </div>
+
+    <script
+      src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+      integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+      integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+      integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+      crossorigin="anonymous"
+    ></script>
+
+    <script>
+      function onSubmitHandler(e) {
+        e.preventDefault();
+        const form = document.getElementById("consulta");
+        var formData = new FormData(form);
+        formData.append(
+          "csrfmiddlewaretoken",
+          document.getElementsByName("csrfmiddlewaretoken")[0].value
+        );
+        var xhr = new XMLHttpRequest();
+        url = window.location.origin + "/realizarConsulta";
+        for (var pair of formData.entries()) {
+          console.log(pair[0] + ", " + pair[1]);
+        }
+        xhr.open("POST", url, true);
+        xhr.onload = function () {
+          if (this.status === 200) {
+            var ciudadano = JSON.parse(this.responseText).ciudadano;
+            var c = confirm(
+              "TE ENCUENTRAS REGISTRADO!, APLICAS PARA LA VACUNACIÓN, DESEAS HACER UNA CITA?"
+            );
+            if (c) {
+              window.location.href =
+                window.location.origin +
+                "/registrarReservacion/" +
+                document.getElementById("dui").value;
+            } else {
+              window.location.href = window.location.origin;
+            }
+          } else {
+            console.log(this.status);
+            alert("AÚN NO ESTAS EN EL GRUPO PARA PODER SER VACUNADO");
+            window.location.href = window.location.origin;
+          }
+        };
+        xhr.send(formData);
+      }
+    </script>
+  </body>
+</html>
